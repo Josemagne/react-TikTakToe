@@ -89,7 +89,7 @@ function App() {
     <>
     <section className="container">
       <article className="content">
-        <h1>Tik Tak Toe Spiel</h1>
+        <h1>Tik Tak Toe Spiel 2.0</h1>
         <section className="result">
           <article className="pointsO-container">
             <p><span>Punkte von O: </span>{pointsO}</p>
