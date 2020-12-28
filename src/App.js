@@ -1,5 +1,6 @@
 import './App.css';
 import React, {useState, useEffect} from 'react';
+import CreateGrid from './components/CreateGrid/CreateGrid';
 
 function App() {
   const [pointsO, setPointsO] = useState(0); // Punkte von O (AI)
@@ -8,49 +9,44 @@ function App() {
   const [gefuellt, setGefuellt] = useState([[], []]); // arr der gefuellten Zellen; 1. arr: X, 2. arr: O
   const [grid, setGrid] = useState();
 
-
-  const zelle = () => { // erstellt eine Zelle
-    
-  }
-
-  const CreateGrid = () => {
-    const gridArray = [];
-    for (let i = 1; i <= 9; i++) {
-      gridArray.push(<li className="zelle" key={i}
-        onClick={ () => setzeZeichen(i)}></li>);
-    }
-    return gridArray;
-  }
-
   const setzeZeichen = (i) => {
-    // fuege Zeichen (spieler) in die Zelle (i)
-    let newGrid = [];
+    // add number to array of actual position
+    for (let j = 1; j <= 9; j++) {
+      if ( j === i ) {
+        if (spieler === 'X') {
+          setGefuellt(gefuellt[0].push(i));
+        } else {
+          setGefuellt(gefuellt[1].push(i));
+        }
+      }
+    }
+    updateGrid(i);
 
+
+    // pruefe ob Linie mit 3 Zeichen besteht
+    pruefe3();
+  }
+
+  const updateGrid = (i) => {
+    let newGrid = [];
     // die bereits geklickten Zellen haben kein eventListener mehr
     for (let j = 1; j <= 9; j++) {
       if (gefuellt[0].includes(j)) {    // fuelle X
         newGrid.push(<li className="zelle" key={j}>X</li>);
+        console.log(1)
       } else if (gefuellt[1].includes(j)) {     // fuelle O
         newGrid.push(<li className="zelle" key={j}>O</li>);
+        console.log(2)
       } else if (j === i) {
         newGrid.push(<li className="zelle" key={j}>{spieler}</li>);
+        console.log(3)
       } else { // if neither is included or was clicked on
         newGrid.push(<li className="zelle" key={j} // leere Zelle
       onClick={ () => setzeZeichen(j)}></li>);
+      console.log(4)
       }
     }
-
     setGrid(newGrid);
-    // merke dir die gefuellten Zellen --> gefuellt
-    if (spieler === 'X') {
-      setGefuellt(gefuellt[0].push(i));
-    } else {
-      setGefuellt(gefuellt[1].push(i));
-    }
-
-    // aendere Spieler Zeichen
-
-    // pruefe ob Linie mit 3 Zeichen besteht
   }
 
   const showResult = () => { // update result
@@ -82,8 +78,13 @@ function App() {
   const aendereSpieler = () => {
     if(spieler === 'X') setSpieler('O');
     else setSpieler('X');
-    console.log('executed')
+    console.log('a: ', spieler)
   }
+
+  useEffect( () => {
+    aendereSpieler();
+    console.log(spieler)
+  }, []);
 
   return (
     <>
@@ -97,12 +98,20 @@ function App() {
           <article className="pointsX-container">
             <p><span>Punkte von X: </span>{pointsX}</p>
           </article>
+          <article className="choisePlayer">
+            <select className="player">
+              <option>O</option>
+              <option>X</option>
+            </select>
+          </article>
         </section>
         <section className="grid-container">
           <article className="grid-content">
             <div className="grid">
               <ul className="zellen">
-                {grid ? grid : <CreateGrid />}
+                {grid ? grid : <CreateGrid
+                  setzeZeichen={setzeZeichen} />
+                  }
               </ul>
             </div>
           </article>
