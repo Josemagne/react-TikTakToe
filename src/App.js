@@ -1,53 +1,14 @@
 import './App.css';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import CreateGrid from './components/CreateGrid/CreateGrid';
 
 function App() {
   const [pointsO, setPointsO] = useState(0); // Punkte von O (AI)
   const [pointsX, setPointsX] = useState(0); // Punkte von X (Benutzer)
-  const [spieler, setSpieler] = useState('X'); // X, O; Benutzer ist X am Anfang
+  const [spieler, setSpieler] = useState('O'); // X, O; Benutzer ist X am Anfang
   const [gefuellt, setGefuellt] = useState([[], []]); // arr der gefuellten Zellen; 1. arr: X, 2. arr: O
-  const [grid, setGrid] = useState();
-
-  const setzeZeichen = (i) => {
-    // add number to array of actual position
-    for (let j = 1; j <= 9; j++) {
-      if ( j === i ) {
-        if (spieler === 'X') {
-          setGefuellt(gefuellt[0].push(i));
-        } else {
-          setGefuellt(gefuellt[1].push(i));
-        }
-      }
-    }
-    updateGrid(i);
-
-
-    // pruefe ob Linie mit 3 Zeichen besteht
-    pruefe3();
-  }
-
-  const updateGrid = (i) => {
-    let newGrid = [];
-    // die bereits geklickten Zellen haben kein eventListener mehr
-    for (let j = 1; j <= 9; j++) {
-      if (gefuellt[0].includes(j)) {    // fuelle X
-        newGrid.push(<li className="zelle" key={j}>X</li>);
-        console.log(1)
-      } else if (gefuellt[1].includes(j)) {     // fuelle O
-        newGrid.push(<li className="zelle" key={j}>O</li>);
-        console.log(2)
-      } else if (j === i) {
-        newGrid.push(<li className="zelle" key={j}>{spieler}</li>);
-        console.log(3)
-      } else { // if neither is included or was clicked on
-        newGrid.push(<li className="zelle" key={j} // leere Zelle
-      onClick={ () => setzeZeichen(j)}></li>);
-      console.log(4)
-      }
-    }
-    setGrid(newGrid);
-  }
+  const [gestartet, setGestartet] = useState(false);
+  const [disabled, setDisabled] = useState(false);
 
   const showResult = () => { // update result
 
@@ -68,11 +29,11 @@ function App() {
   }
 
   const gewonnen = () => { // zeige Gewonnen-Banner
-
+    // TODO update Punktestand
   }
 
   const verloren = () => { // zeige Verloren-Banner
-
+    // TODO update Punktestand
   }
 
   const aendereSpieler = () => {
@@ -81,10 +42,17 @@ function App() {
     console.log('a: ', spieler)
   }
 
+  const waehleZeichen = () => {
+    setDisabled(true);
+    console.log(gestartet)
+  }
+
   useEffect( () => {
-    aendereSpieler();
-    console.log(spieler)
+    setGestartet(true);
+    console.log(gestartet)
+    console.log('geändert')
   }, []);
+
 
   return (
     <>
@@ -99,19 +67,31 @@ function App() {
             <p><span>Punkte von X: </span>{pointsX}</p>
           </article>
           <article className="choisePlayer">
-            <select className="player">
+            <select className="player" disabled={disabled} onChange={ (e) => setSpieler(e.target.value)}>
               <option>O</option>
               <option>X</option>
             </select>
+          </article>
+          <article className="buttonContainer">
+          {/* button */}
+            <button type="button" onClick={() => {
+            waehleZeichen()}}
+            disabled={disabled}
+            >Spielen</button>
           </article>
         </section>
         <section className="grid-container">
           <article className="grid-content">
             <div className="grid">
+              {/* Gitter */}
               <ul className="zellen">
-                {grid ? grid : <CreateGrid
-                  setzeZeichen={setzeZeichen} />
-                  }
+                <CreateGrid
+                  gefuellt={gefuellt}
+                  setGefuellt={setGefuellt}
+                  gestartet={gestartet}
+                  spieler={spieler}
+                  disabled={disabled}
+                  setDisabled={setDisabled} />
               </ul>
             </div>
           </article>
